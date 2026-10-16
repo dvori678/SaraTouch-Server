@@ -17,7 +17,13 @@ using Microsoft.OpenApi.Models;
 using SaraTouch.API.Infrastructure;
 using Microsoft.AspNetCore.Mvc;
 using SaraTouch.API.Models;
+using NLog.Web;
+using SaraTouch.API.Middleware;
 var builder = WebApplication.CreateBuilder(args);
+// NLog מתחבר מתחת ל-ILogger הרגיל. הקוד בשכבות לא משתנה בכלל
+builder.Logging.ClearProviders();
+builder.Host.UseNLog();
+
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("Default")));
 // Repositories: Scoped, כמו ה-DbContext, כלומר מופע אחד לכל בקשה
@@ -72,7 +78,6 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 // הגדרות עסקיות מ-appsettings.json דרך IOptions
 builder.Services.Configure<BookingSettings>(
     builder.Configuration.GetSection(BookingSettings.SectionName));
-// Add services to the container.
 
 // enums יוצאים ב-JSON כטקסט ("Admin") ולא כמספר (1)
 builder.Services.AddControllers()
@@ -126,14 +131,19 @@ builder.Services.AddSwaggerGen(c =>
 });
 
 var app = builder.Build();
-// migrations ו-seed אוטומטיים בעליית השרת
+
+// migrations ו-seed אוטומטיים בעליית השרת, לפני שהשרת מתחיל לקבל בקשות
 using (var scope = app.Services.CreateScope())
 {
     var initializer = scope.ServiceProvider.GetRequiredService<DbInitializer>();
     await initializer.InitializeAsync();
 }
 
-// Configure the HTTP request pipeline.
+// סדר ה-pipeline חשוב:
+app.UseMiddleware<ExceptionHandlingMiddleware>();  // 1. ראשון: עוטף את כל השאר ותופס כל שגיאה
+app.UseMiddleware<CorrelationIdMiddleware>();      // 2. מייצר מזהה לבקשה
+app.UseMiddleware<RequestLoggingMiddleware>();     // 3. רושם כל בקשה, כבר עם המזהה
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -141,9 +151,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-app.UseAuthentication();
+app.UseAuthentication();   // authentication לפני authorization
 app.UseAuthorization();
-
 app.MapControllers();
 
 app.Run();
