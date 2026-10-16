@@ -20,6 +20,7 @@ namespace SaraTouch.Core.DTOs.Appointments
         public int TreatmentId { get; set; }
         public string TreatmentName { get; set; } = string.Empty;
         public decimal Price { get; set; }
+        public List<string> TreatmentTags { get; set; } = new();
 
         public int UserId { get; set; }
         public string ClientName { get; set; } = string.Empty;
