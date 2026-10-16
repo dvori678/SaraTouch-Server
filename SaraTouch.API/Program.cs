@@ -1,4 +1,4 @@
-using Microsoft.EntityFrameworkCore;
+ο»Ώusing Microsoft.EntityFrameworkCore;
 using SaraTouch.Data;
 using SaraTouch.Core.Interfaces.Repositories;
 using SaraTouch.Data.Repositories;
@@ -15,10 +15,12 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using SaraTouch.API.Infrastructure;
+using Microsoft.AspNetCore.Mvc;
+using SaraTouch.API.Models;
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("Default")));
-// Repositories: Scoped, λξε δ-DbContext, λμεξψ ξετς ΰηγ μλμ αχωδ
+// Repositories: Scoped, Χ›ΧΧ• Χ”-DbContext, Χ›ΧΧ•ΧΧ¨ ΧΧ•Χ¤ΧΆ ΧΧ—Χ“ ΧΧ›Χ Χ‘Χ§Χ©Χ”
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<ITreatmentRepository, TreatmentRepository>();
@@ -27,9 +29,9 @@ builder.Services.AddScoped<ITimeSlotRepository, TimeSlotRepository>();
 builder.Services.AddScoped<IAppointmentRepository, AppointmentRepository>();
 // Infrastructure
 builder.Services.AddScoped<IPasswordHasher, BCryptPasswordHasher>();
-builder.Services.AddSingleton<IClock, SystemClock>();   // ΰιο με state, ΰζ Singleton αθεη
+builder.Services.AddSingleton<IClock, SystemClock>();   // ΧΧ™Χ ΧΧ• state, ΧΧ– Singleton Χ‘ΧΧ•Χ—
 builder.Services.AddScoped<DbInitializer>();
-// AutoMapper: ρεψχ ΰϊ δ-Profile επψων μ-DI
+// AutoMapper: Χ΅Χ•Χ¨Χ§ ΧΧª Χ”-Profile Χ•Χ Χ¨Χ©Χ Χ-DI
 builder.Services.AddAutoMapper(cfg =>
 {
     cfg.LicenseKey = builder.Configuration["AutoMapper:LicenseKey"];
@@ -64,20 +66,41 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     });
 builder.Services.AddAuthorization();
 
-// Singleton: μΰ ξηζιχ ωεν γαψ Scoped, ψχ δβγψεϊ εωςεο
+// Singleton: ΧΧ ΧΧ—Χ–Χ™Χ§ Χ©Χ•Χ Χ“Χ‘Χ¨ Scoped, Χ¨Χ§ Χ”Χ’Χ“Χ¨Χ•Χª Χ•Χ©ΧΆΧ•Χ
 builder.Services.AddSingleton<ITokenService, JwtTokenService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
-// δβγψεϊ ςρχιεϊ ξ-appsettings.json γψκ IOptions
+// Χ”Χ’Χ“Χ¨Χ•Χª ΧΆΧ΅Χ§Χ™Χ•Χª Χ-appsettings.json Χ“Χ¨Χ IOptions
 builder.Services.Configure<BookingSettings>(
     builder.Configuration.GetSection(BookingSettings.SectionName));
 // Add services to the container.
 
-// enums ιεφΰιν α-JSON λθχρθ ("Admin") εμΰ λξρτψ (1)
+// enums Χ™Χ•Χ¦ΧΧ™Χ Χ‘-JSON Χ›ΧΧ§Χ΅Χ ("Admin") Χ•ΧΧ Χ›ΧΧ΅Χ¤Χ¨ (1)
 builder.Services.AddControllers()
     .AddJsonOptions(o => o.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
+// ModelState ΧΧ ΧªΧ§Χ™Χ β†’ 400 Χ‘Χ¤Χ•Χ¨ΧΧ ErrorResponse Χ”ΧΧ—Χ™Χ“
+builder.Services.Configure<ApiBehaviorOptions>(options =>
+{
+    options.InvalidModelStateResponseFactory = context =>
+    {
+        var errors = context.ModelState
+            .Where(e => e.Value!.Errors.Count > 0)
+            .ToDictionary(
+                e => e.Key,
+                e => e.Value!.Errors.Select(x => x.ErrorMessage).ToArray());
+
+        return new BadRequestObjectResult(new ErrorResponse
+        {
+            Status = StatusCodes.Status400BadRequest,
+            Title = "Bad Request",
+            Message = "Χ”Χ‘Χ§Χ©Χ” ΧΧ›Χ™ΧΧ” Χ ΧªΧ•Χ Χ™Χ ΧΧ ΧªΧ§Χ™Χ Χ™Χ",
+            CorrelationId = context.HttpContext.TraceIdentifier,
+            Errors = errors
+        });
+    };
+});
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-// Swagger ςν λτϊεψ Authorize μ-JWT
+// Swagger ΧΆΧ Χ›Χ¤ΧªΧ•Χ¨ Authorize Χ-JWT
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "SaraTouch API", Version = "v1" });
@@ -88,7 +111,7 @@ builder.Services.AddSwaggerGen(c =>
         Scheme = "bearer",
         BearerFormat = "JWT",
         In = ParameterLocation.Header,
-        Description = "δγαιχι λΰο ψχ ΰϊ δ-token, αμι δξιμδ Bearer"
+        Description = "Χ”Χ“Χ‘Χ™Χ§Χ™ Χ›ΧΧ Χ¨Χ§ ΧΧª Χ”-token, Χ‘ΧΧ™ Χ”ΧΧ™ΧΧ” Bearer"
     });
     c.AddSecurityRequirement(new OpenApiSecurityRequirement
     {
@@ -103,7 +126,7 @@ builder.Services.AddSwaggerGen(c =>
 });
 
 var app = builder.Build();
-// migrations ε-seed ΰεθεξθιιν αςμιιϊ δωψϊ
+// migrations Χ•-seed ΧΧ•ΧΧ•ΧΧΧ™Χ™Χ Χ‘ΧΆΧΧ™Χ™Χª Χ”Χ©Χ¨Χª
 using (var scope = app.Services.CreateScope())
 {
     var initializer = scope.ServiceProvider.GetRequiredService<DbInitializer>();
