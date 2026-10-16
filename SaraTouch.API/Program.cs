@@ -5,6 +5,7 @@ using SaraTouch.Data.Repositories;
 using SaraTouch.Core.Interfaces.Infrastructure;
 using SaraTouch.Data.Seed;
 using SaraTouch.Service.Infrastructure;
+using SaraTouch.Service.Mapping;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<AppDbContext>(options =>
@@ -20,7 +21,11 @@ builder.Services.AddScoped<IAppointmentRepository, AppointmentRepository>();
 builder.Services.AddScoped<IPasswordHasher, BCryptPasswordHasher>();
 builder.Services.AddSingleton<IClock, SystemClock>();   // אין לו state, אז Singleton בטוח
 builder.Services.AddScoped<DbInitializer>();
-
+// AutoMapper: סורק את ה-Profile ונרשם ל-DI
+builder.Services.AddAutoMapper(cfg =>
+{
+    cfg.LicenseKey = builder.Configuration["AutoMapper:LicenseKey"];
+}, typeof(MappingProfile));
 
 // Add services to the container.
 
