@@ -18,7 +18,7 @@ namespace SaraTouch.Data.Configurations
 
             builder.Property(a => a.Status).HasConversion<string>().HasMaxLength(20);
             builder.Property(a => a.CreatedAtUtc).IsRequired();
-
+            builder.Property(a => a.Notes).HasMaxLength(300);
             // Restrict: אי אפשר למחוק משתמשת, טיפול או סלוט שיש עליהם תורים
             builder.HasOne(a => a.User)
                    .WithMany(u => u.Appointments)

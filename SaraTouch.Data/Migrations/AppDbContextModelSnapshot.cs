@@ -33,6 +33,10 @@ namespace SaraTouch.Data.Migrations
                     b.Property<DateTime>("CreatedAtUtc")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<string>("Notes")
+                        .HasMaxLength(300)
+                        .HasColumnType("character varying(300)");
+
                     b.Property<string>("Status")
                         .IsRequired()
                         .HasMaxLength(20)

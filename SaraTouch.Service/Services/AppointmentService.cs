@@ -104,7 +104,8 @@ public class AppointmentService : IAppointmentService
             TimeSlotId = slot.Id,
             TimeSlot = slot,
             Status = AppointmentStatus.Confirmed,
-            CreatedAtUtc = _clock.UtcNow
+            CreatedAtUtc = _clock.UtcNow,
+            Notes = request.Notes?.Trim()
         };
         _appointments.Add(appointment);
 

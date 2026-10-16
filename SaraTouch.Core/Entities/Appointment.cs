@@ -18,5 +18,6 @@ namespace SaraTouch.Core.Entities
         public TimeSlot TimeSlot { get; set; } = null!;
         public AppointmentStatus Status { get; set; } = AppointmentStatus.Confirmed;
         public DateTime CreatedAtUtc { get; set; } = DateTime.UtcNow;
+        public string? Notes { get; set; }
     }
 }

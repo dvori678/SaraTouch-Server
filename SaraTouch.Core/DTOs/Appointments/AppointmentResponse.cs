@@ -12,7 +12,7 @@ namespace SaraTouch.Core.DTOs.Appointments
         public int Id { get; set; }
         public AppointmentStatus Status { get; set; }
         public DateTime CreatedAtUtc { get; set; }
-
+        public string? Notes { get; set; }
         public int TimeSlotId { get; set; }
         public DateTime StartUtc { get; set; }
         public DateTime EndUtc { get; set; }

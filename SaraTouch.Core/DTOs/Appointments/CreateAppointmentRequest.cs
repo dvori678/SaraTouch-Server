@@ -14,5 +14,7 @@ namespace SaraTouch.Core.DTOs.Appointments
 
         [Range(1, int.MaxValue)]
         public int TreatmentId { get; set; }
+        [StringLength(300)]
+        public string? Notes { get; set; }
     }
 }
