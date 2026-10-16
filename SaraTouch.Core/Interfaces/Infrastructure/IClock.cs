@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SaraTouch.Core.Interfaces.Infrastructure
 {
-    public class IClock
+    public interface IClock
     {
         DateTime UtcNow { get; }
 

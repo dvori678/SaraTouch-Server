@@ -6,7 +6,8 @@ using SaraTouch.Core.Interfaces.Infrastructure;
 using SaraTouch.Data.Seed;
 using SaraTouch.Service.Infrastructure;
 using SaraTouch.Service.Mapping;
-
+using SaraTouch.Core.Interfaces.Services;
+using SaraTouch.Service.Services;
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("Default")));
@@ -27,6 +28,10 @@ builder.Services.AddAutoMapper(cfg =>
     cfg.LicenseKey = builder.Configuration["AutoMapper:LicenseKey"];
 }, typeof(MappingProfile));
 
+// Services
+builder.Services.AddScoped<ITagService, TagService>();
+builder.Services.AddScoped<ITreatmentService, TreatmentService>();
+builder.Services.AddScoped<ITimeSlotService, TimeSlotService>();
 // Add services to the container.
 
 builder.Services.AddControllers();
