@@ -22,10 +22,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Controllers\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\SaraTouch.Core\SaraTouch.Core.csproj" />
     <ProjectReference Include="..\SaraTouch.Data\SaraTouch.Data.csproj" />
     <ProjectReference Include="..\SaraTouch.Service\SaraTouch.Service.csproj" />
