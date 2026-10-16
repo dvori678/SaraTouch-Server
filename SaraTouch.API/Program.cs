@@ -1,4 +1,10 @@
+using Microsoft.EntityFrameworkCore;
+using SaraTouch.Data;
+
+
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseNpgsql(builder.Configuration.GetConnectionString("Default")));
 
 // Add services to the container.
 
