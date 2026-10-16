@@ -8,6 +8,7 @@ using SaraTouch.Service.Infrastructure;
 using SaraTouch.Service.Mapping;
 using SaraTouch.Core.Interfaces.Services;
 using SaraTouch.Service.Services;
+using SaraTouch.Core.Settings;
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("Default")));
@@ -32,6 +33,11 @@ builder.Services.AddAutoMapper(cfg =>
 builder.Services.AddScoped<ITagService, TagService>();
 builder.Services.AddScoped<ITreatmentService, TreatmentService>();
 builder.Services.AddScoped<ITimeSlotService, TimeSlotService>();
+builder.Services.AddScoped<IAppointmentService, AppointmentService>();
+
+// הגדרות עסקיות מ-appsettings.json דרך IOptions
+builder.Services.Configure<BookingSettings>(
+    builder.Configuration.GetSection(BookingSettings.SectionName));
 // Add services to the container.
 
 builder.Services.AddControllers();
