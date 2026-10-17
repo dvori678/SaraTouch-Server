@@ -95,3 +95,20 @@ SaraTouch.sln
 
 ## לוגים
 NLog כותב ל-`SaraTouch.API/bin/Debug/net8.0/logs/saratouch-{date}.log`. בכל שורה מופיע ה-CorrelationId של הבקשה, שחוזר גם בכותרת `X-Correlation-Id` של התשובה. התנגשויות נכתבות ברמת Warning, וחריגות ברמת Error. סיסמאות ו-tokens לא נכתבים ללוג.
+
+## צד הלקוח (React)
+
+הלקוח נמצא בתיקייה `SaraTouch-Client`. הוא מדגים את השרת מקצה לקצה: התחברות והרשמה, רשימת שעות פנויות עם pagination מול השרת, קביעת תור, והצגת 409 כשהשעה נתפסה.
+
+**הרצה:**
+1. מריצים את השרת ב-Visual Studio בפרופיל `https` (`https://localhost:7127`).
+2. בתיקייה `SaraTouch-Client`:
+```
+   npm install
+   npm run dev
+```
+3. פותחים את `http://localhost:5173`.
+
+Vite מעביר כל בקשה ל-`/api` אל השרת (proxy ב-`vite.config.js`), ולכן אין צורך ב-CORS.
+
+**הדגמת 409:** בחלון רגיל מתחברים כ-`client@saratouch.local`, ובחלון גלישה בסתר כ-`client2@saratouch.local`. בשני החלונות בוחרים את אותה שעה. הראשונה שמאשרת מקבלת 201, והשנייה מקבלת 409 עם הודעה, והרשימה מתרעננת.
