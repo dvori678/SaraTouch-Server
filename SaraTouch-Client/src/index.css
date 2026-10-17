@@ -1,0 +1,44 @@
+@import "tailwindcss";
+
+/* צבעי המותג והפונטים. Tailwind v4 הופך כל משתנה כאן למחלקות (bg-cream, text-gold, font-display...) */
+@theme {
+  --color-cream: #FAF8F5;
+  --color-ink: #2E2A27;
+  --color-muted: #8A817C;
+  --color-gold: #B89B72;
+  --color-line: #EAE4DD;
+  --color-success: #7D9A84;
+  --color-danger: #B5574B;
+
+  --font-sans: "Assistant", system-ui, sans-serif;
+  --font-display: "Frank Ruhl Libre", Georgia, serif;
+
+  --shadow-soft: 0 1px 2px rgb(46 42 39 / 0.04), 0 8px 24px rgb(46 42 39 / 0.04);
+}
+
+body {
+  background: var(--color-cream);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* רכיבים שחוזרים על עצמם (ב-Tailwind v4 מגדירים אותם עם @utility) */
+@utility card {
+  @apply bg-white rounded-2xl border border-line shadow-soft;
+}
+@utility input {
+  @apply w-full rounded-xl border border-line bg-white px-4 py-2.5 outline-none transition focus:border-gold;
+}
+@utility btn {
+  @apply inline-flex items-center justify-center gap-2 rounded-xl px-5 py-2.5 font-semibold transition cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed;
+}
+@utility btn-primary {
+  @apply btn bg-ink text-cream hover:bg-ink/85;
+}
+@utility btn-ghost {
+  @apply btn border border-line bg-white text-ink hover:border-gold;
+}
+@utility label {
+  @apply mb-1.5 block text-sm text-muted;
+}
