@@ -45,6 +45,14 @@ namespace SaraTouch.Service.Services
             return page.MapItems<TimeSlot, TimeSlotResponse>(_mapper);
         }
 
+        public async Task<Result<TimeSlotResponse>> GetByIdAsync(int id, CancellationToken ct = default)
+        {
+            var slot = await _slots.GetByIdAsync(id, ct);
+            return slot is null
+                ? Result<TimeSlotResponse>.NotFound("הסלוט לא נמצא")
+                : Result<TimeSlotResponse>.Success(_mapper.Map<TimeSlotResponse>(slot));
+        }
+
         public async Task<Result<TimeSlotResponse>> CreateAsync(CreateTimeSlotRequest request, CancellationToken ct = default)
         {
             var start = request.StartUtc!.Value.AsUtc();

@@ -22,6 +22,18 @@ public class TimeSlotsController : ApiControllerBase
         [FromQuery] TimeSlotQuery query, CancellationToken ct) =>
         Ok(await _slots.GetPagedAsync(query, ct));
 
+
+    [HttpGet("{id:int}")]
+    [AllowAnonymous]
+    [ProducesResponseType(typeof(TimeSlotResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<TimeSlotResponse>> GetById([FromRoute] int id, CancellationToken ct)
+    {
+        var result = await _slots.GetByIdAsync(id, ct);
+        return result.IsSuccess ? Ok(result.Value) : FromFailure(result);
+    }
+
+
     [HttpPost]
     [Authorize(Roles = "Admin")]
     [ProducesResponseType(typeof(TimeSlotResponse), StatusCodes.Status201Created)]
@@ -31,8 +43,8 @@ public class TimeSlotsController : ApiControllerBase
     {
         var result = await _slots.CreateAsync(request, ct);
         return result.IsSuccess
-            ? CreatedAtAction(nameof(GetAll), null, result.Value)
-            : FromFailure(result);
+? CreatedAtAction(nameof(GetById), new { id = result.Value!.Id }, result.Value)
+: FromFailure(result);
     }
 
     /// <summary>שרה חוסמת סלוט (Blocked) או פותחת אותו (Available)</summary>

@@ -35,6 +35,9 @@ namespace SaraTouch.Data.Repositories
                     .ToPagedResultAsync(query.Page, query.PageSize, ct);
         }
 
+        public Task<TimeSlot?> GetByIdAsync(int id, CancellationToken ct = default) =>
+    _context.TimeSlots.AsNoTracking().FirstOrDefaultAsync(s => s.Id == id, ct);
+
         // tracked: הסלוט נטען יחד עם ה-Version הנוכחי, ו-EF ישים אותו ב-WHERE בשמירה
         public Task<TimeSlot?> GetForUpdateAsync(int id, CancellationToken ct = default) =>
             _context.TimeSlots.FirstOrDefaultAsync(s => s.Id == id, ct);
