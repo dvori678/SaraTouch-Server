@@ -30,7 +30,6 @@
 ### דרישות
 - .NET 8 SDK
 - PostgreSQL 16 או 17, שרץ על `localhost:5432`
-- Node.js 20.19 ומעלה (ללקוח)
 
 ### 1. הגדרת סודות (User Secrets)
 הסיסמה של בסיס הנתונים ומפתח ה-JWT **לא** נמצאים ב-repo. מריצים מהתיקייה הראשית:
@@ -44,7 +43,7 @@ dotnet user-secrets set "Jwt:Key" "any-random-string-of-at-least-32-characters" 
 ```bash
 dotnet run --project SaraTouch.API --launch-profile https
 ```
-או **F5** ב-Visual Studio.
+או F5 ב-Visual Studio, בפרופיל https.
 
 **אין צורך ליצור את בסיס הנתונים ידנית.** בעליית השרת `DbInitializer` מריץ את כל ה-migrations ומכניס נתוני דמו: משתמשות, טיפולים, תגיות, ו-80 סלוטים לשבועיים הקרובים.
 
