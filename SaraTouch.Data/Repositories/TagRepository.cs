@@ -18,6 +18,9 @@ namespace SaraTouch.Data.Repositories
         public Task<List<Tag>> GetAllAsync(CancellationToken ct = default) =>
             _context.Tags.AsNoTracking().OrderBy(g => g.Name).ToListAsync(ct);
 
+        public Task<Tag?> GetByIdAsync(int id, CancellationToken ct = default) =>
+    _context.Tags.AsNoTracking().FirstOrDefaultAsync(t => t.Id == id, ct);
+
         public Task<List<Tag>> GetByIdsForUpdateAsync(IEnumerable<int> ids, CancellationToken ct = default)
         {
             var idList = ids.Distinct().ToList();

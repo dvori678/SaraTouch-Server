@@ -33,6 +33,13 @@ namespace SaraTouch.Service.Services
             return _mapper.Map<List<TagResponse>>(tags);
         }
 
+        public async Task<Result<TagResponse>> GetByIdAsync(int id, CancellationToken ct = default)
+        {
+            var tag = await _tags.GetByIdAsync(id, ct);
+            return tag is null
+                ? Result<TagResponse>.NotFound("התגית לא נמצאה")
+                : Result<TagResponse>.Success(_mapper.Map<TagResponse>(tag));
+        }
         public async Task<Result<TagResponse>> CreateAsync(TagRequest request, CancellationToken ct = default)
         {
             var name = request.Name.Trim();

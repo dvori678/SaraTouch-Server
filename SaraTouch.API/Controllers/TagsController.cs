@@ -19,6 +19,16 @@ public class TagsController : ApiControllerBase
     public async Task<ActionResult<List<TagResponse>>> GetAll(CancellationToken ct) =>
         Ok(await _tags.GetAllAsync(ct));
 
+    [HttpGet("{id:int}")]
+    [AllowAnonymous]
+    [ProducesResponseType(typeof(TagResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<TagResponse>> GetById([FromRoute] int id, CancellationToken ct)
+    {
+        var result = await _tags.GetByIdAsync(id, ct);
+        return result.IsSuccess ? Ok(result.Value) : FromFailure(result);
+    }
+
     [HttpPost]
     [Authorize(Roles = "Admin")]
     [ProducesResponseType(typeof(TagResponse), StatusCodes.Status201Created)]
@@ -27,7 +37,7 @@ public class TagsController : ApiControllerBase
     {
         var result = await _tags.CreateAsync(request, ct);
         return result.IsSuccess
-            ? CreatedAtAction(nameof(GetAll), null, result.Value)
-            : FromFailure(result);
+? CreatedAtAction(nameof(GetById), new { id = result.Value!.Id }, result.Value)
+: FromFailure(result);
     }
 }
