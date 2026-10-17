@@ -30,6 +30,7 @@
 ### דרישות
 - .NET 8 SDK
 - PostgreSQL 16 או 17, שרץ על `localhost:5432`
+- Node.js 20.19 ומעלה (ללקוח)
 
 ### 1. הגדרת סודות (User Secrets)
 הסיסמה של בסיס הנתונים ומפתח ה-JWT **לא** נמצאים ב-repo. מריצים מהתיקייה הראשית:
@@ -41,7 +42,7 @@ dotnet user-secrets set "Jwt:Key" "any-random-string-of-at-least-32-characters" 
 
 ### 2. הרצה
 ```bash
-dotnet run --project SaraTouch.API
+dotnet run --project SaraTouch.API --launch-profile https
 ```
 או **F5** ב-Visual Studio.
 
@@ -76,7 +77,8 @@ SaraTouch.sln
 ├── SaraTouch.Data       AppDbContext, Fluent API, Migrations, Repositories, UnitOfWork, Seed
 ├── SaraTouch.Service    לוגיקה עסקית, AutoMapper Profiles, הצפנת סיסמאות
 ├── SaraTouch.API        Controllers, Middleware, JWT, NLog, Program.cs
-└── SaraTouch.Tests      xUnit + Moq, ובדיקת concurrency עם שני DbContext
+├── SaraTouch.Tests      xUnit + Moq, ובדיקת concurrency עם שני DbContext
+└── SaraTouch-Client     לקוח React (Vite), לא חלק מה-solution
 ```
 
 **כיוון התלויות:** Core לא תלוי באף פרויקט. Data ו-Service תלויים ב-Core. API תלוי ב-Service וב-Core, ומכיר את Data רק לרישום ב-DI.
