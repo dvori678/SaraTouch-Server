@@ -36,12 +36,14 @@ namespace SaraTouch.Data.Repositories
             if (query.TagId.HasValue)
                 q = q.Where(t => t.Tags.Any(g => g.Id == query.TagId.Value));
 
+            // ThenBy(Id): מיון יציב. בלי זה, שני טיפולים עם אותו מחיר יכולים
+            // להחליף מקום בין שאילתות, ואותו טיפול יופיע בשני עמודים
             q = (query.SortBy?.ToLower(), query.Descending) switch
             {
-                ("price", false) => q.OrderBy(t => t.Price),
-                ("price", true) => q.OrderByDescending(t => t.Price),
-                (_, true) => q.OrderByDescending(t => t.Name),
-                _ => q.OrderBy(t => t.Name)
+                ("price", false) => q.OrderBy(t => t.Price).ThenBy(t => t.Id),
+                ("price", true) => q.OrderByDescending(t => t.Price).ThenBy(t => t.Id),
+                (_, true) => q.OrderByDescending(t => t.Name).ThenBy(t => t.Id),
+                _ => q.OrderBy(t => t.Name).ThenBy(t => t.Id)
             };
 
             return q.ToPagedResultAsync(query.Page, query.PageSize, ct);
